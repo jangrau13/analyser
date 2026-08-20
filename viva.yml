@@ -1,0 +1,21 @@
+version: 1
+assignment: analyser
+
+goals:
+  - id: the-stampede
+    level: analyse
+    goal: >
+      Trace what your cache does at the instant a popular key expires and a
+      hundred callers want it, and work out how many reach the origin.
+
+  - id: the-bound
+    level: evaluate
+    goal: >
+      Judge whether your cache is bounded, and defend the answer by pointing at
+      the line that enforces the capacity.
+
+  - id: the-clock
+    level: analyse
+    goal: >
+      Work out which clock your expiry reads, and how you would test a key
+      going stale without waiting for it.
