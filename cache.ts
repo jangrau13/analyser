@@ -1,10 +1,3 @@
-/**
- * A cache in front of a slow origin.
- *
- * The plumbing is settled: what a key is, how the origin is called, and what
- * the caller does with a miss. `get` is the part with a decision in it.
- */
-
 export interface Origin {
   fetch(key: string): Promise<string>;
 }
@@ -27,8 +20,14 @@ export class Cache {
     this.now = now;
   }
 
-  /** The value for this key, from the cache if it is there and still good. */
-  async get(_key: string): Promise<string> {
-    throw new Error('not implemented');
+  async get(key: string): Promise<string> {
+    const hit = this.entries.get(key);
+    if (hit !== undefined) {
+      return hit;
+    }
+
+    const value = await this.origin.fetch(key);
+    this.entries.set(key, value);
+    return value;
   }
 }
