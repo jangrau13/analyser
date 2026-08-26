@@ -2,8 +2,10 @@ export interface Origin {
   fetch(key: string): Promise<string>;
 }
 
+type Entry = { value: string; expires: number };
+
 export class Cache {
-  private entries = new Map<string, string>();
+  private entries = new Map<string, Entry>();
 
   private origin: Origin;
   private capacity: number;
@@ -22,12 +24,13 @@ export class Cache {
 
   async get(key: string): Promise<string> {
     const hit = this.entries.get(key);
-    if (hit !== undefined) {
-      return hit;
+    if (hit && hit.expires > this.now()) {
+      return hit.value;
     }
 
+    // Miss, or stale. Go to the origin and remember what it said.
     const value = await this.origin.fetch(key);
-    this.entries.set(key, value);
+    this.entries.set(key, { value, expires: this.now() + this.ttlMs });
     return value;
   }
 }
